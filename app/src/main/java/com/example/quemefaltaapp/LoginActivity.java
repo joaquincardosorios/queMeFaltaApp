@@ -21,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     TextView tvRegisterHere, tvRecoverPass;
     Button btnLogin;
     AuthenticationHelper authHelper;
+    Helpers helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btnLogin);
 
         authHelper = new AuthenticationHelper();
+        helper = new Helpers();
 
         btnLogin.setOnClickListener(view -> {
             loginUser();
@@ -56,7 +58,11 @@ public class LoginActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(email)){
             etEmail.setError("El email no puede estar vacio");
             etEmail.requestFocus();
-        }else if (TextUtils.isEmpty(pass)){
+        } else if(!helper.isValidEmail(email)){
+            etEmail.setError("El email no tiene un formato válido");
+            etEmail.requestFocus();
+        }
+        if (TextUtils.isEmpty(pass)){
             etPass.setError("La contraseña no puede estar vacia");
             etPass.requestFocus();
         }else{

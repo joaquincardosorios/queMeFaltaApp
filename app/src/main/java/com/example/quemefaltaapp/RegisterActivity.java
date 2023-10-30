@@ -75,8 +75,8 @@ public class RegisterActivity extends AppCompatActivity {
         }
         // Validar apellido
         if(TextUtils.isEmpty(lastname)){
-            etEmail.setError("El apellido no puede ir vacío");
-            etEmail.requestFocus();
+            etLastname.setError("El apellido no puede ir vacío");
+            etLastname.requestFocus();
             valid = false;
         }
 
@@ -85,7 +85,7 @@ public class RegisterActivity extends AppCompatActivity {
             etEmail.setError("El email no puede ir vacío");
             etEmail.requestFocus();
             valid = false;
-        } else if (helper.isValidEmail(email)) {
+        } else if (!helper.isValidEmail(email)) {
             etEmail.setError("El email no es valido");
             etEmail.requestFocus();
             valid = false;

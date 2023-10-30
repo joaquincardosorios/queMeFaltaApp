@@ -10,7 +10,8 @@ public class Helpers {
                 "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[_A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         Pattern pattern = Pattern.compile(EMAIL_PATTERN);
         Matcher matcher = pattern.matcher(email);
-        return !matcher.matches();
+        boolean valid = matcher.matches();
+        return valid;
     }
 
     public static String capitalizeFirstLetter(String input) {
