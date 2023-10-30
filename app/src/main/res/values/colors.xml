@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="primaryBg">#4B6FF0</color>
+    <color name="secondaryBg">#2F5AF4</color>
+    <color name="tertiaryBg">#D9D9D9</color>
+    <color name="primaryTxt">#FFF</color>
+    <color name="secondaryTxt">#3B1A64</color>
+    <color name="tertiaryTxt">#555</color>
+    <color name="button">#613E8D</color>
+    <color name="btnCheck">#27751B</color>
+    <color name="btnUpdate">#613E8D</color>
+    <color name="priorityLow">#30A01E</color>
+    <color name="priorityMed">#D08C25</color>
+    <color name="priorityHigh">#BA2727</color>
+
+
+</resources>

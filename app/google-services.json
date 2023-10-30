@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "564334654210",
+    "project_id": "que-me-falta-app",
+    "storage_bucket": "que-me-falta-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:564334654210:android:989f15c2387d060afac81b",
+        "android_client_info": {
+          "package_name": "com.example.quemefaltaapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB_8ZsZOr5c3llw68H8e1sduXZ-Pu84dIY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
