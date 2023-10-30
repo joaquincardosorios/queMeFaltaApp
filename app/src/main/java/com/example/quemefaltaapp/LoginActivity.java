@@ -18,10 +18,9 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
     TextInputEditText etEmail, etPass;
-    TextView tvRegisterHere;
+    TextView tvRegisterHere, tvRecoverPass;
     Button btnLogin;
-
-    FirebaseAuth mAuth;
+    AuthenticationHelper authHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,9 +30,10 @@ public class LoginActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmailLog);
         etPass = findViewById(R.id.etPassLog);
         tvRegisterHere = findViewById(R.id.tvRegistrarAqui);
+        tvRecoverPass = findViewById(R.id.tvRecuperarPass);
         btnLogin = findViewById(R.id.btnLogin);
 
-        mAuth = FirebaseAuth.getInstance();
+        authHelper = new AuthenticationHelper();
 
         btnLogin.setOnClickListener(view -> {
             loginUser();
@@ -41,6 +41,10 @@ public class LoginActivity extends AppCompatActivity {
 
         tvRegisterHere.setOnClickListener(view -> {
             startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+        });
+
+        tvRecoverPass.setOnClickListener(view -> {
+            startActivity(new Intent(LoginActivity.this, RecoverPasswordActivity.class));
         });
 
     }
@@ -56,18 +60,7 @@ public class LoginActivity extends AppCompatActivity {
             etPass.setError("La contraseña no puede estar vacia");
             etPass.requestFocus();
         }else{
-            mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()){
-                            Toast.makeText(LoginActivity.this, "Inicio de Sesión exitoso", Toast.LENGTH_LONG).show();
-                            startActivity(new Intent(LoginActivity.this, MainActivity.class));
-                        } else{
-                            Toast.makeText(LoginActivity.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                }
-            });
-
+            authHelper.LoginUserAuth(this,email,pass);
         }
 
     }
