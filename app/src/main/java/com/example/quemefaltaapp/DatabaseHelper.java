@@ -21,6 +21,8 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
@@ -73,6 +75,26 @@ public class DatabaseHelper {
         });
     }
 
+    public void updateUser(Context context, List<String> homes, String id){
+        DbRef = FirebaseFirestore.getInstance();
+        DbRef
+                .collection("users")
+                .document(id)
+                .update("homes", homes)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(context, "Todo salio bien", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
     public void createHome(Home home, String idUser, OnResultListener listener){
         DbRef = FirebaseFirestore.getInstance();
         DocumentReference userRef = DbRef.collection("users").document(idUser);
@@ -89,7 +111,27 @@ public class DatabaseHelper {
             .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    listener.onResultFailure("Hubo un error: " + e.getMessage());
+                    listener.onResultFailure("Hubo un error: " );
+                }
+            });
+    }
+
+    public  void getHomeByKey(String key, OnResultListener listener){
+        DbRef = FirebaseFirestore.getInstance();
+        DbRef
+            .collection("homes")
+            .whereEqualTo("homeCode", key)
+            .get()
+            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+                        for(QueryDocumentSnapshot document : task.getResult()){
+                            listener.onResultSuccess();
+                        }
+                    } else {
+                        listener.onResultFailure("No se encontró hogar, verifica el código");
+                    }
                 }
             });
     }

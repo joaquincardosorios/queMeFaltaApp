@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, FirstStepActivity.class));
         } else {
             startActivity(new Intent(MainActivity.this, ProductsListActivity.class));
-
         }
     }
 
