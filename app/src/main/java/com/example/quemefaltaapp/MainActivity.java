@@ -6,7 +6,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -22,65 +24,33 @@ import com.google.firebase.auth.UserInfo;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    AuthenticationHelper authHelper;
-    private FirebaseFirestore userDbRef;
     User user;
-    private LiveData<User> liveUserData = new MutableLiveData<>();
-
+    LocalStorageHelper lsHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        authHelper = new AuthenticationHelper();
-
+        lsHelper = new LocalStorageHelper();
     }
 
     @Override
     protected void onStart(){
         super.onStart();
-        String uid;
-        userDbRef = FirebaseFirestore.getInstance();
-        FirebaseUser userAuth = authHelper.getUser();
-        if (userAuth == null){
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        user = lsHelper.getLocalUser(this);
+        Toast.makeText(this, user.getHomes().size() +"", Toast.LENGTH_SHORT).show();
+        if(user.getHomes().size() == 0){
+            startActivity(new Intent(MainActivity.this, FirstStepActivity.class));
+        } else {
+            startActivity(new Intent(MainActivity.this, ProductsListActivity.class));
+
         }
-        uid = userAuth.getProviderData().get(0).getUid();
-        DocumentReference userRef = userDbRef.collection("users").document(uid);
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()){
-                    DocumentSnapshot document = task.getResult();
-                    if(document.exists()){
-                        String name = (String) document.getData().get("name");
-                        String lastname = (String) document.getData().get("lastname");
-                        String email = (String) document.getData().get("email");
-                        boolean active = (boolean) document.getData().get("active");
-                        List<String> homes = (List<String>) document.getData().get("home");
-                        user = new User(email,name,lastname,homes,active);
-                        ((MutableLiveData<User>) liveUserData).setValue(user);
-                    }
-                }
-            }
-        });
-        liveUserData.observe(this, new Observer<User>() {
-            @Override
-            public void onChanged(User user) {
-                if (user.getHomes().size() == 0) {
-                    startActivity(new Intent(MainActivity.this, FirstStepActivity.class));
-                } else {
-
-                }
-            }
-        });
-
     }
 
 }

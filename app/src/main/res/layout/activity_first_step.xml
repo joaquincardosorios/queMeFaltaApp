@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:padding="24dp"
     android:background="@color/primaryBg"
-    tools:context=".RegisterActivity">
+    tools:context=".FirstStepActivity">
 
     <ImageView
         android:id="@+id/imageView"

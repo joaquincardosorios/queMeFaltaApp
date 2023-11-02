@@ -12,7 +12,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthInvalidUserException;
+import com.google.firebase.auth.FirebaseAuthMissingActivityForRecaptchaException;
 import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseAuthWeakPasswordException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -43,16 +47,19 @@ public class AuthenticationHelper {
         });
     }
 
-    public void LoginUserAuth(Context context, String email, String pass){
+    public void LoginUserAuth(String email, String pass, OnResultListener listener){
         mAuth = FirebaseAuth.getInstance();
         mAuth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if (task.isSuccessful()){
-                    Toast.makeText(context, "Inicio de Sesión exitoso", Toast.LENGTH_LONG).show();
-                    context.startActivity(new Intent(context, MainActivity.class));
+                    listener.onResultSuccess();
                 } else{
-                    Toast.makeText(context, "Error: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
+                    try{
+                        throw task.getException();
+                    } catch (Exception e){
+                        listener.onResultFailure("Correo o contraseña inválido");
+                    }
                 }
             }
         });
@@ -69,15 +76,21 @@ public class AuthenticationHelper {
     }
 
     public void ResetPassAuth(Context context, String email){
+        mAuth = FirebaseAuth.getInstance();
         mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()) {
-                    Toast.makeText(context, "Revisa tu correo para resetar tu password", Toast.LENGTH_LONG).show();
+                    Toast.makeText(context, "Revisa tu correo para resetear tu password", Toast.LENGTH_LONG).show();
                     context.startActivity(new Intent(context, LoginActivity.class ));
                 }
             }
         });
+    }
+
+    public void VerifyLog(Context context){
+        mAuth = FirebaseAuth.getInstance();
+
     }
 
 }

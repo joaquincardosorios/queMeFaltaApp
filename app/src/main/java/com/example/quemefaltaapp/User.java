@@ -1,9 +1,10 @@
 package com.example.quemefaltaapp;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public class User implements Serializable {
     String Email;
     String Name;
     String Lastname;
@@ -48,6 +49,17 @@ public class User {
 
     public void setEmail(String email) {
         Email = email;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "Email='" + Email + '\'' +
+                ", Name='" + Name + '\'' +
+                ", Lastname='" + Lastname + '\'' +
+                ", homes=" + homes +
+                ", active=" + active +
+                '}';
     }
 
     public List<String> getHomes() {

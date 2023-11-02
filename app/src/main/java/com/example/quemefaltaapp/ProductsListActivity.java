@@ -1,28 +1,41 @@
 package com.example.quemefaltaapp;
 
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.content.Intent;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
-import android.widget.TextView;
+
+
+import com.example.quemefaltaapp.databinding.ActivityProductsListBinding;
 
 public class ProductsListActivity extends AppCompatActivity {
-
-    TextView tv_logout;
-    User user;
-
-    AuthenticationHelper authHelper;
-
+    ActivityProductsListBinding binding;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_products_list);
-        tv_logout = findViewById(R.id.tvLogoutList);
-        authHelper = new AuthenticationHelper();
+        binding = ActivityProductsListBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        replaceFragment(new ListFragment());
+        binding.bottomNavigationView.getMenu().findItem(R.id.it_list).setChecked(true);
 
-        tv_logout.setOnClickListener(view -> {
-            authHelper.Logout();
-            startActivity(new Intent(ProductsListActivity.this, LoginActivity.class));
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            if (item.getItemId() == R.id.it_home){
+                replaceFragment(new HomeFragment());
+            } else if (item.getItemId() == R.id.it_settings){
+                replaceFragment(new SettingsFragment());
+            } else {
+                replaceFragment(new ListFragment());
+            }
+
+            return true;
         });
+    }
+
+    private void replaceFragment(Fragment fragment){
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.frame_layout, fragment);
+        fragmentTransaction.commit();
     }
 }

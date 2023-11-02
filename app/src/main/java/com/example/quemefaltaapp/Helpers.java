@@ -1,5 +1,11 @@
 package com.example.quemefaltaapp;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.widget.Toast;
+
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -27,5 +33,18 @@ public class Helpers {
         }
 
         return result.toString().trim();
+    }
+
+    public void CopyText(Context context, String text){
+        ClipboardManager clipboard = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData clip = ClipData.newPlainText("Texto copiado", text);
+        clipboard.setPrimaryClip(clip);
+        Toast.makeText(context, "Texto copiado en el portapapeles", Toast.LENGTH_LONG).show();
+    }
+
+    public String generateID(){
+        String uuidString = UUID.randomUUID().toString();
+        String last10Characters = uuidString.substring(uuidString.length() - 10);
+        return last10Characters;
     }
 }
