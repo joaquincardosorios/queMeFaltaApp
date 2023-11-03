@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -29,7 +30,7 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
     Helpers helper;
     DatabaseHelper dbHelper;
     LocalStorageHelper lsHelper;
-    String code;
+    String code, userId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +49,11 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
         lsHelper = new LocalStorageHelper();
 
         user = lsHelper.getLocalUser(this);
+        userId = lsHelper.getLocalId(this);
+
+        if(user.getHomes().size() == 0){
+            startActivity(new Intent(this, FirstStepActivity.class));
+        }
 
         btnCopy.setOnClickListener(view -> {
             String code = etCode.getText().toString();
@@ -57,11 +63,15 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
         btnCreate.setOnClickListener(view -> {
             createHome();
         });
+
+        tvBack.setOnClickListener( view -> {
+            Intent i = new Intent(this, MainActivity.class);
+            startActivity(i);
+        });
     }
 
     private void createHome(){
         String name = etName.getText().toString();
-        Toast.makeText(this, name, Toast.LENGTH_SHORT).show();
         if (validateHome(name)){
             code = helper.generateID();
             String userId = lsHelper.getLocalId(this);
@@ -100,13 +110,26 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
 
     @Override
     public void onResultSuccess() {
-        Toast.makeText(this, "Hogar creado exitosamente, copie el codigo y envialo a tu grupo", Toast.LENGTH_LONG).show();
-        //TODO ingresar nuevo hogar a User
+        // TODO mejorar interface OnResultSuccess
+        // Lista con nuevos hogares
+        List<String> homes = user.getHomes();
+        // Actualiza instancia user
+        homes.add(code);
+        user.setHomes(homes);
+        // Actualiza homes
+        //TODO updater global
+        dbHelper.updateUser(this, homes, userId);
+
+        // Guarda cambios en LS
+        lsHelper.saveLocalUser(this, user, userId);
         etName.setEnabled(false);
         etCode.setVisibility(View.VISIBLE);
         btnCopy.setVisibility(View.VISIBLE);
         etCode.setText(code);
         etCode.setEnabled(false);
+        btnCreate.setEnabled(false);
+        Toast.makeText(this, "Hogar creado exitosamente, copie el codigo y envialo a tu grupo", Toast.LENGTH_LONG).show();
+
     }
 
     @Override
