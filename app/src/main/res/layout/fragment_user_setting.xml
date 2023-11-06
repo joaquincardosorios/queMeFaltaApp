@@ -20,7 +20,7 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/imageButton"
+                android:id="@+id/btnBackUserSettings"
                 android:layout_width="30dp"
                 android:layout_gravity="center"
                 android:layout_height="30dp"

@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.example.quemefaltaapp.MainActivity;
 import com.example.quemefaltaapp.R;
 import com.example.quemefaltaapp.classes.Home;
+import com.example.quemefaltaapp.classes.SessionManager;
 import com.example.quemefaltaapp.classes.User;
 import com.example.quemefaltaapp.helpers.DatabaseHelper;
 import com.example.quemefaltaapp.helpers.Helpers;
@@ -24,7 +25,7 @@ import com.example.quemefaltaapp.interfaces.OnResultListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateHomeActivity extends AppCompatActivity implements OnResultListener {
+public class CreateHomeActivity extends AppCompatActivity {
 
     EditText etName, etCode;
     Button btnCreate;
@@ -34,7 +35,9 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
     Helpers helper;
     DatabaseHelper dbHelper;
     LocalStorageHelper lsHelper;
+    SessionManager sessionManager;
     String code, userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,9 +54,10 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
         helper = new Helpers();
         dbHelper = new DatabaseHelper();
         lsHelper = new LocalStorageHelper();
+        sessionManager = SessionManager.getInstance(this);
 
         user = lsHelper.getLocalUser(this);
-        userId = lsHelper.getLocalId(this);
+        userId = sessionManager.getUserId();
 
         if(user.getHomes().size() != 0){
             startActivity(new Intent(this, FirstStepActivity.class));
@@ -78,7 +82,6 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
         String name = etName.getText().toString();
         if (validateHome(name)){
             code = helper.generateID();
-            String userId = lsHelper.getLocalId(this);
             List<String> categories = new ArrayList<>();
             categories.add("el refrigerador");
             categories.add("la despensa");
@@ -143,15 +146,4 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
         return valid;
     }
 
-
-    @Override
-    public void onResultSuccess() {
-
-
-    }
-
-    @Override
-    public void onResultFailure(String errorMessage) {
-
-    }
 }

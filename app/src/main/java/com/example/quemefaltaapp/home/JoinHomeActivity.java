@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.example.quemefaltaapp.MainActivity;
 import com.example.quemefaltaapp.R;
+import com.example.quemefaltaapp.classes.SessionManager;
 import com.example.quemefaltaapp.classes.User;
 import com.example.quemefaltaapp.helpers.DatabaseHelper;
 import com.example.quemefaltaapp.helpers.LocalStorageHelper;
@@ -26,6 +27,7 @@ public class JoinHomeActivity extends AppCompatActivity implements OnResultListe
     TextView tvBack;
     LocalStorageHelper lsHelper;
     DatabaseHelper dbHelper;
+    SessionManager sessionManager;
     User user;
     String userId;
     @Override
@@ -38,9 +40,10 @@ public class JoinHomeActivity extends AppCompatActivity implements OnResultListe
 
         lsHelper = new LocalStorageHelper();
         dbHelper = new DatabaseHelper();
+        sessionManager = SessionManager.getInstance(this);
 
         user = lsHelper.getLocalUser(this);
-        userId = lsHelper.getLocalId(this);
+        userId = sessionManager.getUserId();
 
         tvBack.setOnClickListener( view -> {
             Intent i = new Intent(this, MainActivity.class);
