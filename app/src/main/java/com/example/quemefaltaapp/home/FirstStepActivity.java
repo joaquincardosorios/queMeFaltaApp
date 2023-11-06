@@ -1,4 +1,4 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.home;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -6,7 +6,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.quemefaltaapp.R;
+import com.example.quemefaltaapp.auth.LoginActivity;
+import com.example.quemefaltaapp.classes.User;
+import com.example.quemefaltaapp.helpers.AuthenticationHelper;
+import com.example.quemefaltaapp.helpers.LocalStorageHelper;
 
 public class FirstStepActivity extends AppCompatActivity {
     TextView tv_logout;
@@ -34,7 +39,7 @@ public class FirstStepActivity extends AppCompatActivity {
             startActivity(i);
         });
         btn_joinHome.setOnClickListener(view -> {
-            startActivity(new Intent(FirstStepActivity.this, LoginActivity.class));
+            startActivity(new Intent(FirstStepActivity.this, JoinHomeActivity.class));
         });
 
         tv_logout.setOnClickListener(view -> {

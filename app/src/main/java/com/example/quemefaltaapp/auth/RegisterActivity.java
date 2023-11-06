@@ -1,25 +1,17 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.auth;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.example.quemefaltaapp.R;
+import com.example.quemefaltaapp.helpers.AuthenticationHelper;
+import com.example.quemefaltaapp.helpers.Helpers;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class RegisterActivity extends AppCompatActivity {

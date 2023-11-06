@@ -1,4 +1,4 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.helpers;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;

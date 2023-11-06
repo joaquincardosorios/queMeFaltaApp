@@ -1,4 +1,4 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.classes;
 
 import java.io.Serializable;
 import java.util.ArrayList;

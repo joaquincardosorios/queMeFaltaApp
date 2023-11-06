@@ -1,4 +1,4 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.interfaces;
 
 public interface OnResultListener {
     void onResultSuccess();

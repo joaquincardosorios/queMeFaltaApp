@@ -6,7 +6,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import android.os.Bundle;
 
-
 import com.example.quemefaltaapp.databinding.ActivityProductsListBinding;
 
 public class ProductsListActivity extends AppCompatActivity {
@@ -21,7 +20,7 @@ public class ProductsListActivity extends AppCompatActivity {
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.it_home){
-                replaceFragment(new HomeFragment());
+                replaceFragment(new SettingsFragment());
             } else if (item.getItemId() == R.id.it_settings){
                 replaceFragment(new SettingsFragment());
             } else {

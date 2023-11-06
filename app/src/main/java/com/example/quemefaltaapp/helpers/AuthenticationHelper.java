@@ -1,4 +1,4 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.helpers;
 
 import android.content.Context;
 import android.content.Intent;
@@ -6,6 +6,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.quemefaltaapp.auth.LoginActivity;
+import com.example.quemefaltaapp.interfaces.OnResultListener;
+import com.example.quemefaltaapp.classes.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;

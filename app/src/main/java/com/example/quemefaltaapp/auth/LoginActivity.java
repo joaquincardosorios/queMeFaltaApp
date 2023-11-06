@@ -1,4 +1,4 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.auth;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -10,6 +10,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.quemefaltaapp.MainActivity;
+import com.example.quemefaltaapp.R;
+import com.example.quemefaltaapp.classes.User;
+import com.example.quemefaltaapp.helpers.AuthenticationHelper;
+import com.example.quemefaltaapp.helpers.DatabaseHelper;
+import com.example.quemefaltaapp.helpers.Helpers;
+import com.example.quemefaltaapp.helpers.LocalStorageHelper;
+import com.example.quemefaltaapp.interfaces.OnResultListener;
+import com.example.quemefaltaapp.interfaces.OnUserResultListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.auth.FirebaseUser;
 

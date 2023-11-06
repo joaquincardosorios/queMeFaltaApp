@@ -1,27 +1,24 @@
-package com.example.quemefaltaapp;
-
-import static androidx.core.content.ContextCompat.startActivity;
+package com.example.quemefaltaapp.helpers;
 
 import android.content.Context;
 import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
+import com.example.quemefaltaapp.classes.Home;
+import com.example.quemefaltaapp.auth.LoginActivity;
+import com.example.quemefaltaapp.interfaces.OnDataResultListener;
+import com.example.quemefaltaapp.interfaces.OnResultListener;
+import com.example.quemefaltaapp.interfaces.OnUserResultListener;
+import com.example.quemefaltaapp.classes.User;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
@@ -75,63 +72,69 @@ public class DatabaseHelper {
         });
     }
 
-    public void updateUser(Context context, List<String> homes, String id){
+    public void updateUser(User user, String id, OnResultListener listener){
         DbRef = FirebaseFirestore.getInstance();
         DbRef
                 .collection("users")
                 .document(id)
-                .update("homes", homes)
+                .set(user)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
-                        Toast.makeText(context, "Todo salio bien", Toast.LENGTH_SHORT).show();
+                        listener.onResultSuccess();
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {
                     @Override
                     public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, e.getMessage(), Toast.LENGTH_SHORT).show();
+                        listener.onResultFailure(e.getMessage());
                     }
                 });
     }
 
-    public void createHome(Home home, String idUser, OnResultListener listener){
+    public void createHome(Home home, String idUser, OnDataResultListener listener){
         DbRef = FirebaseFirestore.getInstance();
-        DocumentReference userRef = DbRef.collection("users").document(idUser);
-        home.setCreator(userRef);
+        home.setCreator(idUser);
         DbRef
             .collection("homes")
             .add(home)
             .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                 @Override
                 public void onSuccess(DocumentReference documentReference) {
-                    listener.onResultSuccess();
+                    String idHome = documentReference.getId();
+                    listener.onDataRetrieved(idHome);
                 }
             })
             .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    listener.onResultFailure("Hubo un error: " );
+                    listener.onDataRetrievalFailure("Error: " + e.getMessage() );
                 }
             });
     }
 
-    public  void getHomeByKey(String key, OnResultListener listener){
+    public  void getHomeByKey(String key, OnDataResultListener listener){
         DbRef = FirebaseFirestore.getInstance();
         DbRef
             .collection("homes")
             .whereEqualTo("homeCode", key)
             .get()
-            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if(task.isSuccessful()){
-                        for(QueryDocumentSnapshot document : task.getResult()){
-                            listener.onResultSuccess();
-                        }
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    if(!queryDocumentSnapshots.isEmpty()){
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                        String idHome = documentSnapshot.getId();
+                        listener.onDataRetrieved(idHome);
                     } else {
-                        listener.onResultFailure("No se encontró hogar, verifica el código");
+                        listener.onDataRetrievalFailure("No se encontró código");
                     }
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    listener.onDataRetrievalFailure(e.getMessage());
                 }
             });
     }

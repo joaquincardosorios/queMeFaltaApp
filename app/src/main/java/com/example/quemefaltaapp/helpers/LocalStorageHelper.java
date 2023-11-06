@@ -1,10 +1,12 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.helpers;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import com.example.quemefaltaapp.auth.LoginActivity;
+import com.example.quemefaltaapp.classes.User;
 import com.google.gson.Gson;
 
 public class LocalStorageHelper {
