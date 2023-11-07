@@ -20,10 +20,6 @@ public class LocalStorageHelper {
     public User getLocalUser(Context context){
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         String userJson = sharedPreferences.getString("user", null);
-        if (userJson == null) {
-            Toast.makeText(context, "Usuario no encontrado, inicie sesión", Toast.LENGTH_SHORT).show();
-            context.startActivity(new Intent(context, LoginActivity.class));
-        }
         Gson gson = new Gson();
         User user = gson.fromJson(userJson, User.class);
         return user;
@@ -39,13 +35,12 @@ public class LocalStorageHelper {
         return id;
     }
 
-    public void saveLocalUser(Context context, User user, String uid){
+    public void saveLocalUser(Context context, User user){
         SharedPreferences sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         Gson gson = new Gson();
         String userJson = gson.toJson(user);
         editor.putString("user", userJson);
-        editor.putString("id", uid);
         editor.apply();
     }
 

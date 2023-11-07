@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.example.quemefaltaapp.auth.LoginActivity;
 import com.example.quemefaltaapp.helpers.AuthenticationHelper;
+import com.example.quemefaltaapp.settings.HomesSettingFragment;
 import com.example.quemefaltaapp.settings.UserSettingFragment;
 
 
@@ -41,7 +42,7 @@ public class SettingsFragment extends Fragment {
                 if(position == 0){
                     fragment = new UserSettingFragment();
                 } else if (position == 1) {
-                    fragment = new HomeFragment();
+                    fragment = new HomesSettingFragment();
                 } else if (position == 2) {
                     fragment = new HomeFragment();
                 } else if (position == 3) {

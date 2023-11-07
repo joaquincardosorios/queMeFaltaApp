@@ -13,13 +13,16 @@ import com.example.quemefaltaapp.classes.User;
 import com.example.quemefaltaapp.helpers.DatabaseHelper;
 import com.example.quemefaltaapp.helpers.LocalStorageHelper;
 import com.example.quemefaltaapp.home.FirstStepActivity;
+import com.example.quemefaltaapp.interfaces.OnDocumentResultListener;
+import com.example.quemefaltaapp.interfaces.OnDocumentsResultListener;
 import com.example.quemefaltaapp.interfaces.OnHomesResultListener;
 import com.example.quemefaltaapp.interfaces.OnUserResultListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
     String userId;
     LocalStorageHelper lsHelper;
     DatabaseHelper dbHelper;
@@ -40,31 +43,40 @@ public class MainActivity extends AppCompatActivity {
             startActivity(new Intent(MainActivity.this, LoginActivity.class));
         }
         userId = sessionManager.getUserId();
-        dbHelper.getUser(userId, new OnUserResultListener() {
+        dbHelper.getUser(userId, new OnDocumentResultListener() {
             @Override
-            public void onUserRetrieved(User user) {
+            public void onDocumentRetrieved(DocumentSnapshot document) {
+                User user = document.toObject(User.class);
+                lsHelper.saveLocalUser(MainActivity.this, user);
                 if(user.getHomes().size() == 0){
                     startActivity(new Intent(MainActivity.this, FirstStepActivity.class));
                 } else {
-                    dbHelper.GetHomes(user.getHomes(), new OnHomesResultListener() {
+                    dbHelper.GetHomes(user.getHomes(), new OnDocumentsResultListener() {
                         @Override
-                        public void onHomesRetrieved(List<Home> homes) {
-                            lsHelper.saveLocalUser(MainActivity.this, user, userId);
+                        public void onDocumentsRetrieved(List<DocumentSnapshot> documents) {
+                            List<Home> homes = new ArrayList<>();
+                            for(DocumentSnapshot document : documents){
+                                Home home = document.toObject(Home.class);
+                                homes.add(home);
+                            }
                             lsHelper.saveHomeList(MainActivity.this, homes);
                             startActivity(new Intent(MainActivity.this, ProductsListActivity.class));
                         }
 
                         @Override
-                        public void onHomesRetrievalFailure(String errorMessage) {
+                        public void onDocumentsRetrievalFailure(String errorMessage) {
                             Toast.makeText(MainActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(MainActivity.this, LoginActivity.class));
                         }
                     });
 
                 }
             }
+
             @Override
-            public void onUserRetrievalFailure(String errorMessage) {
+            public void onDocumentRetrievalFailure(String errorMessage) {
                 Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
             }
         });
     }

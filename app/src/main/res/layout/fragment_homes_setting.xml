@@ -83,7 +83,7 @@
                 <ListView
                     android:id="@+id/lvYourHomesSettings"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="162dp" />
 
                 <TextView
                     android:id="@+id/textView"
@@ -96,7 +96,7 @@
                 <ListView
                     android:id="@+id/lvHomesSettings"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:layout_height="176dp" />
             </LinearLayout>
 
         </ScrollView>

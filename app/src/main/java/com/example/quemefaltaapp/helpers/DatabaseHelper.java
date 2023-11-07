@@ -9,11 +9,14 @@ import androidx.annotation.NonNull;
 import com.example.quemefaltaapp.classes.Home;
 import com.example.quemefaltaapp.auth.LoginActivity;
 import com.example.quemefaltaapp.interfaces.OnDataResultListener;
+import com.example.quemefaltaapp.interfaces.OnDocumentResultListener;
+import com.example.quemefaltaapp.interfaces.OnDocumentsResultListener;
 import com.example.quemefaltaapp.interfaces.OnHomeResultListener;
 import com.example.quemefaltaapp.interfaces.OnHomesResultListener;
 import com.example.quemefaltaapp.interfaces.OnResultListener;
 import com.example.quemefaltaapp.interfaces.OnUserResultListener;
 import com.example.quemefaltaapp.classes.User;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,26 +56,24 @@ public class DatabaseHelper {
             });
     }
 
-    public void getUser(String uid, OnUserResultListener listener){
+    public void getUser(String uid, OnDocumentResultListener listener){
         DbRef = FirebaseFirestore.getInstance();
         DocumentReference userRef = DbRef.collection("users").document(uid);
-        userRef.get()
-            .addOnSuccessListener( document -> {
-                if(document.exists()){
-                    String name = (String) document.getData().get("name");
-                    String lastname = (String) document.getData().get("lastname");
-                    String email = (String) document.getData().get("email");
-                    boolean active = (boolean) document.getData().get("active");
-                    List<String> homes = (List<String>) document.getData().get("homes");
-                    User user = new User(email,name,lastname,homes,active);
-                    listener.onUserRetrieved(user);
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        listener.onDocumentRetrieved(document);
+                    } else {
+                        listener.onDocumentRetrievalFailure("No se encontró usuario");
+                    }
                 } else {
-                    listener.onUserRetrievalFailure("No existe el usuario");
+                    listener.onDocumentRetrievalFailure("Holo");
                 }
-            })
-            .addOnFailureListener(e -> {
-                listener.onUserRetrievalFailure(e.getMessage());
-            });
+            }
+        });
     }
 
     public void updateUser(User user, String id, OnResultListener listener){
@@ -116,7 +117,7 @@ public class DatabaseHelper {
             });
     }
 
-    public  void getHomeByKey(String key, OnDataResultListener listener){
+    public  void getHomeByKey(String key, OnDocumentResultListener listener){
         DbRef = FirebaseFirestore.getInstance();
         DbRef
             .collection("homes")
@@ -127,22 +128,21 @@ public class DatabaseHelper {
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     if(!queryDocumentSnapshots.isEmpty()){
                         DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
-                        String idHome = documentSnapshot.getId();
-                        listener.onDataRetrieved(idHome);
+                        listener.onDocumentRetrieved(documentSnapshot);
                     } else {
-                        listener.onDataRetrievalFailure("No se encontró código");
+                        listener.onDocumentRetrievalFailure("No se encontró código");
                     }
                 }
             })
             .addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
-                    listener.onDataRetrievalFailure(e.getMessage());
+                    listener.onDocumentRetrievalFailure(e.getMessage());
                 }
             });
     }
 
-    public void GetHomes(List<String> homesIdList, OnHomesResultListener listener){
+    public void GetHomes(List<String> homesIdList, OnDocumentsResultListener listener){
         DbRef = FirebaseFirestore.getInstance();
         CollectionReference homeCollection = DbRef.collection("homes");
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
@@ -153,22 +153,10 @@ public class DatabaseHelper {
         Task<List<DocumentSnapshot>> allTasks = Tasks.whenAllSuccess(tasks);
         allTasks
             .addOnSuccessListener(documentSnapshots -> {
-                List<Home> homeList = new ArrayList<>();
-                for (DocumentSnapshot documentSnapshot : documentSnapshots){
-                    if(documentSnapshot.exists()){
-                        String homeCode = documentSnapshot.getString("homeCode");
-                        String creator = documentSnapshot.getString("creator");
-                        String name = documentSnapshot.getString("name");
-                        List<String> categories = documentSnapshot.contains("categories") ?
-                                (List<String>) documentSnapshot.get("categories") : new ArrayList<>();
-                        Home home = new Home(homeCode, creator, name, categories);
-                        homeList.add(home);
-                    }
-                }
-                listener.onHomesRetrieved(homeList);
+                listener.onDocumentsRetrieved(documentSnapshots);
             })
             .addOnFailureListener( e -> {
-                listener.onHomesRetrievalFailure(e.getMessage());
+                listener.onDocumentsRetrievalFailure(e.getMessage());
             });
     }
 }

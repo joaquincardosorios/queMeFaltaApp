@@ -32,8 +32,6 @@ public class FirstStepActivity extends AppCompatActivity {
         authHelper = new AuthenticationHelper();
         lsHelper = new LocalStorageHelper();
 
-        User user = lsHelper.getLocalUser(this);
-
         btn_createHome.setOnClickListener(view -> {
             Intent i = new Intent(FirstStepActivity.this, CreateHomeActivity.class);
             startActivity(i);

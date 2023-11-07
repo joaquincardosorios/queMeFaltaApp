@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.example.quemefaltaapp.MainActivity;
 import com.example.quemefaltaapp.R;
+import com.example.quemefaltaapp.auth.LoginActivity;
 import com.example.quemefaltaapp.classes.Home;
 import com.example.quemefaltaapp.classes.SessionManager;
 import com.example.quemefaltaapp.classes.User;
@@ -57,11 +58,10 @@ public class CreateHomeActivity extends AppCompatActivity {
         sessionManager = SessionManager.getInstance(this);
 
         user = lsHelper.getLocalUser(this);
-        userId = sessionManager.getUserId();
-
-        if(user.getHomes().size() != 0){
-            startActivity(new Intent(this, FirstStepActivity.class));
+        if(user == null){
+            startActivity(new Intent(this, LoginActivity.class));
         }
+        userId = sessionManager.getUserId();
 
         btnCopy.setOnClickListener(view -> {
             String code = etCode.getText().toString();
@@ -99,7 +99,7 @@ public class CreateHomeActivity extends AppCompatActivity {
                     dbHelper.updateUser(user, userId, new OnResultListener() {
                         @Override
                         public void onResultSuccess() {
-                            lsHelper.saveLocalUser(CreateHomeActivity.this, user, userId);
+                            lsHelper.saveLocalUser(CreateHomeActivity.this, user);
                             etName.setEnabled(false);
                             etCode.setVisibility(View.VISIBLE);
                             btnCopy.setVisibility(View.VISIBLE);

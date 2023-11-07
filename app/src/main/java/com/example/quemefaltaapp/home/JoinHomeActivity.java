@@ -17,7 +17,9 @@ import com.example.quemefaltaapp.classes.User;
 import com.example.quemefaltaapp.helpers.DatabaseHelper;
 import com.example.quemefaltaapp.helpers.LocalStorageHelper;
 import com.example.quemefaltaapp.interfaces.OnDataResultListener;
+import com.example.quemefaltaapp.interfaces.OnDocumentResultListener;
 import com.example.quemefaltaapp.interfaces.OnResultListener;
+import com.google.firebase.firestore.DocumentSnapshot;
 
 import java.util.List;
 
@@ -59,16 +61,16 @@ public class JoinHomeActivity extends AppCompatActivity implements OnResultListe
     }
 
     private void validateHomeDB(String code){
-        dbHelper.getHomeByKey(code, new OnDataResultListener() {
+        dbHelper.getHomeByKey(code, new OnDocumentResultListener() {
             @Override
-            public void onDataRetrieved(String idHome) {
+            public void onDocumentRetrieved(DocumentSnapshot documentHome) {
                 List<String> updatedHomes = user.getHomes();
-                updatedHomes.add(idHome);
+                updatedHomes.add(documentHome.getId());
                 user.setHomes(updatedHomes);
                 dbHelper.updateUser(user, userId, new OnResultListener() {
                     @Override
                     public void onResultSuccess() {
-                        lsHelper.saveLocalUser(JoinHomeActivity.this,user, userId);
+                        lsHelper.saveLocalUser(JoinHomeActivity.this,user);
                         Toast.makeText(JoinHomeActivity.this, "Hogar creado exitosamente", Toast.LENGTH_SHORT).show();
                         Intent i = new Intent(JoinHomeActivity.this, MainActivity.class);
                         startActivity(i);
@@ -82,7 +84,7 @@ public class JoinHomeActivity extends AppCompatActivity implements OnResultListe
             }
 
             @Override
-            public void onDataRetrievalFailure(String errorMessage) {
+            public void onDocumentRetrievalFailure(String errorMessage) {
                 Toast.makeText(JoinHomeActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
             }
         });

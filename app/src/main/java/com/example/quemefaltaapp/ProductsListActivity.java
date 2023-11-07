@@ -20,7 +20,7 @@ public class ProductsListActivity extends AppCompatActivity {
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.it_home){
-                replaceFragment(new SettingsFragment());
+                replaceFragment(new HomeFragment());
             } else if (item.getItemId() == R.id.it_settings){
                 replaceFragment(new SettingsFragment());
             } else {
