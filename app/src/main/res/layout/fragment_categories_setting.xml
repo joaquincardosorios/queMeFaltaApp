@@ -3,12 +3,93 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/primaryBg"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".settings.CategoriesSettingFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:padding="24dp"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnBackCategoriesSettings"
+                android:layout_width="30dp"
+                android:layout_gravity="center"
+                android:layout_height="30dp"
+                android:background="#00FFFFFF"
+                android:src="@drawable/baseline_backspace_24"
+                app:tint="@android:color/holo_red_light" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_gravity="center"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:contentDescription="Logo"
+                android:src="@drawable/logo" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Configuración de Categorias"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            android:textColor="@color/primaryTxt"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="16dp"/>
+
+        <Spinner
+            android:id="@+id/spHomesCategoriesSetting"
+            android:layout_width="match_parent"
+            android:background="@drawable/rounded_border"
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="5dp"
+            android:layout_height="wrap_content" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCreateCategorieSetting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:layout_marginTop="15dp"
+            android:text="Crear Nueva Categorias"/>
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:orientation="vertical"
+                android:layout_height="match_parent">
+                <TextView
+                    android:id="@+id/tvYourHomesCategoriesSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="24dp"
+                    android:text="Tus Categorias:" />
+
+                <ListView
+                    android:id="@+id/lvCategoriesSetting"
+                    android:layout_width="match_parent"
+                    android:layout_height="332dp" />
+
+            </LinearLayout>
+
+        </ScrollView>
+
+    </LinearLayout>
 
 </FrameLayout>

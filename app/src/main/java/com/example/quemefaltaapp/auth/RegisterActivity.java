@@ -9,8 +9,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.quemefaltaapp.R;
+import com.example.quemefaltaapp.classes.User;
 import com.example.quemefaltaapp.helpers.AuthenticationHelper;
+import com.example.quemefaltaapp.helpers.DatabaseHelper;
 import com.example.quemefaltaapp.helpers.Helpers;
+import com.example.quemefaltaapp.interfaces.OnDataResultListener;
+import com.example.quemefaltaapp.interfaces.OnResultListener;
 import com.google.android.material.textfield.TextInputEditText;
 
 
@@ -20,6 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
     Button btnRegister;
     String name, lastname, email, pass, pass2;
     Helpers helper;
+    DatabaseHelper dbHelper;
     AuthenticationHelper authHelper;
 
     @Override
@@ -36,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
 
         helper = new Helpers();
+        dbHelper = new DatabaseHelper();
         authHelper = new AuthenticationHelper();
 
         btnRegister.setOnClickListener( view -> {
@@ -53,7 +59,20 @@ public class RegisterActivity extends AppCompatActivity {
         pass = etPass.getText().toString();
         pass2 = etPass2.getText().toString();
         if(validateData()) {
-            authHelper.CreateUserAuth(this, email, helper.capitalizeFirstLetter(name),helper.capitalizeFirstLetter(lastname), pass);
+            String capitalName = helper.capitalizeFirstLetter(name);
+            String capitalLastname = helper.capitalizeFirstLetter(lastname);
+            authHelper.CreateUserAuth(email, capitalName, capitalLastname, pass, new OnDataResultListener() {
+                @Override
+                public void onDataRetrieved(String uid) {
+                    User user = new User(email, name, lastname);
+                    dbHelper.createUserDB(RegisterActivity.this, user, uid);
+                }
+
+                @Override
+                public void onDataRetrievalFailure(String errorMessage) {
+
+                }
+            });
         }
     }
 

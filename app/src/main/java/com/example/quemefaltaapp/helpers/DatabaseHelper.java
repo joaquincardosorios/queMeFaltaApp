@@ -34,9 +34,11 @@ import java.util.List;
 public class DatabaseHelper {
     private FirebaseFirestore DbRef;
 
+    public DatabaseHelper(){
+        DbRef = FirebaseFirestore.getInstance();
+    }
 
     public void createUserDB(Context context, User user, String id){
-        DbRef = FirebaseFirestore.getInstance();
         DbRef
             .collection("users")
             .document(id)
@@ -56,10 +58,9 @@ public class DatabaseHelper {
             });
     }
 
-    public void getUser(String uid, OnDocumentResultListener listener){
-        DbRef = FirebaseFirestore.getInstance();
-        DocumentReference userRef = DbRef.collection("users").document(uid);
-        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+    public void getDocument(String collection, String id, OnDocumentResultListener listener){
+        DocumentReference docRef = DbRef.collection(collection).document(id);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 if (task.isSuccessful()) {
@@ -67,17 +68,33 @@ public class DatabaseHelper {
                     if (document.exists()) {
                         listener.onDocumentRetrieved(document);
                     } else {
-                        listener.onDocumentRetrievalFailure("No se encontró usuario");
+                        listener.onDocumentRetrievalFailure("Elemento no encontrado");
                     }
                 } else {
-                    listener.onDocumentRetrievalFailure("Holo");
+                    listener.onDocumentRetrievalFailure("Hubo un error");
                 }
             }
         });
     }
 
+    public void DeleteDocument(String collection, String id, OnResultListener listener){
+        DocumentReference docRef = DbRef.collection(collection).document(id);
+        docRef.delete()
+            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void unused) {
+                    listener.onResultSuccess();
+                }
+            })
+            .addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    listener.onResultFailure(e.getMessage());
+                }
+            });
+    }
+
     public void updateUser(User user, String id, OnResultListener listener){
-        DbRef = FirebaseFirestore.getInstance();
         DbRef
             .collection("users")
             .document(id)
@@ -97,7 +114,6 @@ public class DatabaseHelper {
     }
 
     public void createHome(Home home, String idUser, OnDataResultListener listener){
-        DbRef = FirebaseFirestore.getInstance();
         home.setCreator(idUser);
         DbRef
             .collection("homes")
@@ -118,7 +134,6 @@ public class DatabaseHelper {
     }
 
     public  void getHomeByKey(String key, OnDocumentResultListener listener){
-        DbRef = FirebaseFirestore.getInstance();
         DbRef
             .collection("homes")
             .whereEqualTo("homeCode", key)
@@ -143,7 +158,6 @@ public class DatabaseHelper {
     }
 
     public void GetHomes(List<String> homesIdList, OnDocumentsResultListener listener){
-        DbRef = FirebaseFirestore.getInstance();
         CollectionReference homeCollection = DbRef.collection("homes");
         List<Task<DocumentSnapshot>> tasks = new ArrayList<>();
         for(String homeId : homesIdList ){

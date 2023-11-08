@@ -60,7 +60,7 @@ public class HomesSettingFragment extends Fragment {
         dbHelper = new DatabaseHelper();
         sessionManager = SessionManager.getInstance(getContext());
         userId = sessionManager.getUserId();
-        dbHelper.getUser(userId, new OnDocumentResultListener() {
+        dbHelper.getDocument("users", userId, new OnDocumentResultListener() {
             @Override
             public void onDocumentRetrieved(DocumentSnapshot documentUser) {
                 user = documentUser.toObject(User.class);

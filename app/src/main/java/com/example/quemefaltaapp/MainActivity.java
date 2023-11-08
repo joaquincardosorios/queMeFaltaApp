@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    String userId;
     LocalStorageHelper lsHelper;
     DatabaseHelper dbHelper;
     private SessionManager sessionManager;
@@ -34,48 +33,61 @@ public class MainActivity extends AppCompatActivity {
         sessionManager = SessionManager.getInstance(this);
         lsHelper = new LocalStorageHelper();
         dbHelper = new DatabaseHelper();
+
+        if(!sessionManager.isLoggedIn()){
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        } else {
+            String userId = sessionManager.getUserId();
+            retrieveUserFromDatabase(userId);
+        }
     }
 
     @Override
     protected void onStart(){
         super.onStart();
-        if(!sessionManager.isLoggedIn()){
-            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        }
-        userId = sessionManager.getUserId();
-        dbHelper.getUser(userId, new OnDocumentResultListener() {
+    }
+
+    private void retrieveUserFromDatabase(String userId){
+        dbHelper.getDocument("users", userId, new OnDocumentResultListener() {
             @Override
-            public void onDocumentRetrieved(DocumentSnapshot document) {
-                User user = document.toObject(User.class);
-                lsHelper.saveLocalUser(MainActivity.this, user);
-                if(user.getHomes().size() == 0){
-                    startActivity(new Intent(MainActivity.this, FirstStepActivity.class));
+            public void onDocumentRetrieved(DocumentSnapshot documentUser) {
+                User user = documentUser.toObject(User.class);
+                if(user == null){
+                    Toast.makeText(MainActivity.this, "No se encontró usuario en la base de datos.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
                 } else {
-                    dbHelper.GetHomes(user.getHomes(), new OnDocumentsResultListener() {
-                        @Override
-                        public void onDocumentsRetrieved(List<DocumentSnapshot> documents) {
-                            List<Home> homes = new ArrayList<>();
-                            for(DocumentSnapshot document : documents){
-                                Home home = document.toObject(Home.class);
-                                homes.add(home);
-                            }
-                            lsHelper.saveHomeList(MainActivity.this, homes);
-                            startActivity(new Intent(MainActivity.this, ProductsListActivity.class));
-                        }
-
-                        @Override
-                        public void onDocumentsRetrievalFailure(String errorMessage) {
-                            Toast.makeText(MainActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(MainActivity.this, LoginActivity.class));
-                        }
-                    });
-
+                    lsHelper.saveLocalUser(MainActivity.this, user);
+                    if(user.getHomes().size() == 0){
+                        startActivity(new Intent(MainActivity.this, FirstStepActivity.class));
+                    } else {
+                        checkUserHomesAndRedirect(user);
+                    }
                 }
             }
-
             @Override
             public void onDocumentRetrievalFailure(String errorMessage) {
                 Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            }
+        });
+    }
+
+    private void checkUserHomesAndRedirect(User user){
+        dbHelper.GetHomes(user.getHomes(), new OnDocumentsResultListener() {
+            @Override
+            public void onDocumentsRetrieved(List<DocumentSnapshot> documents) {
+                List<Home> homes = new ArrayList<>();
+                for(DocumentSnapshot document : documents){
+                    Home home = document.toObject(Home.class);
+                    homes.add(home);
+                }
+                lsHelper.saveHomeList(MainActivity.this, homes);
+                startActivity(new Intent(MainActivity.this, ProductsListActivity.class));
+            }
+
+            @Override
+            public void onDocumentsRetrievalFailure(String errorMessage) {
+                Toast.makeText(MainActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
             }
         });

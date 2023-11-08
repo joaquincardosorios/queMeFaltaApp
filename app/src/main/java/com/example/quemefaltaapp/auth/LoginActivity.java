@@ -1,5 +1,6 @@
 package com.example.quemefaltaapp.auth;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
@@ -18,10 +19,16 @@ import com.example.quemefaltaapp.helpers.AuthenticationHelper;
 import com.example.quemefaltaapp.helpers.DatabaseHelper;
 import com.example.quemefaltaapp.helpers.Helpers;
 import com.example.quemefaltaapp.helpers.LocalStorageHelper;
+import com.example.quemefaltaapp.interfaces.OnDataResultListener;
 import com.example.quemefaltaapp.interfaces.OnResultListener;
 import com.example.quemefaltaapp.interfaces.OnUserResultListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.ArrayList;
 
 
 public class LoginActivity extends AppCompatActivity {
@@ -30,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
     Button btnLogin;
     AuthenticationHelper authHelper;
     Helpers helper;
-    private SessionManager sessionManager;
+    SessionManager sessionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,32 +68,31 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    private void loginUser(){
+    private void loginUser() {
         String email = etEmail.getText().toString();
         String pass = etPass.getText().toString();
         // Valida entrada de campos de texto
-        if(validateLogin(email, pass)){
+        if (validateLogin(email, pass)) {
             // Autentifica si usuario existe y si la contraseña es correcta
-            authHelper.LoginUserAuth(email, pass, new OnResultListener() {
+            authHelper.LoginUserAuth(email, pass, new OnDataResultListener() {
                 @Override
-                public void onResultSuccess() {
-                    //En caso de estar autentificado, busca los datos en la BD del usuario
-                    FirebaseUser userAuth = authHelper.getUser();
-                    String uid = userAuth.getProviderData().get(0).getUid();
-                    String username = userAuth.getProviderData().get(0).getEmail();
-                    sessionManager.loginUser(uid,username);
+                public void onDataRetrieved(String data) {
+                    String[] loginInfo = data.split("#");
+                    sessionManager.loginUser(loginInfo[0], loginInfo[1]);
                     Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     LoginActivity.this.startActivity(intent);
                 }
 
                 @Override
-                public void onResultFailure(String errorMessage) {
-                    Toast.makeText(LoginActivity.this, "Error:" + errorMessage, Toast.LENGTH_LONG).show();
+                public void onDataRetrievalFailure(String errorMessage) {
+                    Toast.makeText(LoginActivity.this, "Error: " +errorMessage, Toast.LENGTH_SHORT).show();
                 }
+
             });
         }
-
     }
+
+
 
 
     private boolean validateLogin(String email, String pass){

@@ -7,60 +7,76 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.quemefaltaapp.R;
+import com.example.quemefaltaapp.classes.AdapterSpinner;
+import com.example.quemefaltaapp.classes.Home;
+import com.example.quemefaltaapp.classes.SessionManager;
+import com.example.quemefaltaapp.helpers.DatabaseHelper;
+import com.example.quemefaltaapp.helpers.LocalStorageHelper;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CategoriesSettingFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class CategoriesSettingFragment extends Fragment {
+    Spinner spHomes;
+    Button btnCreateCategory;
+    ImageButton btnBack;
+    ListView lvCategories;
+    LocalStorageHelper lsHelper;
+    DatabaseHelper dbHelper;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    SessionManager sessionManager;
+    List<Home> homes;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public CategoriesSettingFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CategoriesSettingFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CategoriesSettingFragment newInstance(String param1, String param2) {
-        CategoriesSettingFragment fragment = new CategoriesSettingFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    List<String> categories;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_categories_setting, container, false);
+        View view = inflater.inflate(R.layout.fragment_categories_setting, container, false);
+        spHomes = view.findViewById(R.id.spHomesCategoriesSetting);
+        btnCreateCategory = view.findViewById(R.id.btnCreateCategorieSetting);
+        btnBack = view.findViewById(R.id.btnBackCategoriesSettings);
+        lvCategories = view.findViewById(R.id.lvCategoriesSetting);
+
+        lsHelper = new LocalStorageHelper();
+        dbHelper = new DatabaseHelper();
+        sessionManager = SessionManager.getInstance(getContext());
+
+        homes = lsHelper.getHomeList(getContext());
+        List<String> homeNames = new ArrayList<>();
+        for(Home home : homes){
+            homeNames.add(home.getName());
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item, homeNames);
+        spHomes.setAdapter(adapter);
+
+        spHomes.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Home homeSelected = homes.get(position);
+                categories = homeSelected.getCategories();
+                Toast.makeText(getContext(), categories.get(1), Toast.LENGTH_SHORT).show();
+                ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1, categories);
+                lvCategories.setAdapter(adapter);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+
+
+        return view;
     }
 }
