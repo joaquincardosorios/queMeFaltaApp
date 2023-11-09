@@ -59,4 +59,14 @@ public class Home {
     public void setCategories(List<String> categories) {
         Categories = categories;
     }
+
+    @Override
+    public String toString() {
+        return "Home{" +
+                "HomeCode='" + HomeCode + '\'' +
+                ", Creator='" + Creator + '\'' +
+                ", Name='" + Name + '\'' +
+                ", Categories=" + Categories.toString() +
+                '}';
+    }
 }

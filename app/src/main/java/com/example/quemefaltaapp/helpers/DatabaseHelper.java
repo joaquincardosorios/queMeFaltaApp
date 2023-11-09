@@ -112,6 +112,24 @@ public class DatabaseHelper {
                 }
                 });
     }
+    public void UpdateDocument(String collection, String id, Object document, OnResultListener listener){
+        DbRef
+                .collection(collection)
+                .document(id)
+                .set(document)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        listener.onResultSuccess();
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        listener.onResultFailure(e.getMessage());
+                    }
+                });
+    }
 
     public void createHome(Home home, String idUser, OnDataResultListener listener){
         home.setCreator(idUser);

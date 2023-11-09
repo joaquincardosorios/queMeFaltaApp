@@ -83,6 +83,7 @@
 
                 <ListView
                     android:id="@+id/lvCategoriesSetting"
+                    android:layout_marginVertical="10dp"
                     android:layout_width="match_parent"
                     android:layout_height="332dp" />
 
