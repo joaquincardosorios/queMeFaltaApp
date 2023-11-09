@@ -1,55 +1,96 @@
 package com.example.quemefaltaapp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.Observer;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.auth.UserInfo;
-import com.google.firebase.firestore.DocumentReference;
+import com.example.quemefaltaapp.auth.LoginActivity;
+import com.example.quemefaltaapp.classes.Home;
+import com.example.quemefaltaapp.classes.SessionManager;
+import com.example.quemefaltaapp.classes.User;
+import com.example.quemefaltaapp.helpers.DatabaseHelper;
+import com.example.quemefaltaapp.helpers.LocalStorageHelper;
+import com.example.quemefaltaapp.home.FirstStepActivity;
+import com.example.quemefaltaapp.interfaces.OnDocumentResultListener;
+import com.example.quemefaltaapp.interfaces.OnDocumentsResultListener;
+import com.example.quemefaltaapp.interfaces.OnHomesResultListener;
+import com.example.quemefaltaapp.interfaces.OnUserResultListener;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    User user;
     LocalStorageHelper lsHelper;
+    DatabaseHelper dbHelper;
+    private SessionManager sessionManager;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        sessionManager = SessionManager.getInstance(this);
         lsHelper = new LocalStorageHelper();
+        dbHelper = new DatabaseHelper();
+
+        if(!sessionManager.isLoggedIn()){
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        } else {
+            String userId = sessionManager.getUserId();
+            retrieveUserFromDatabase(userId);
+        }
     }
 
     @Override
     protected void onStart(){
         super.onStart();
-        user = lsHelper.getLocalUser(this);
-        Toast.makeText(this, user.getHomes().size() +"", Toast.LENGTH_SHORT).show();
-        if(user.getHomes().size() == 0){
-            startActivity(new Intent(MainActivity.this, FirstStepActivity.class));
-        } else {
-            startActivity(new Intent(MainActivity.this, ProductsListActivity.class));
-        }
+    }
+
+    private void retrieveUserFromDatabase(String userId){
+        dbHelper.getDocument("users", userId, new OnDocumentResultListener() {
+            @Override
+            public void onDocumentRetrieved(DocumentSnapshot documentUser) {
+                User user = documentUser.toObject(User.class);
+                if(user == null){
+                    Toast.makeText(MainActivity.this, "No se encontró usuario en la base de datos.", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                } else {
+                    lsHelper.saveLocalUser(MainActivity.this, user);
+                    if(user.getHomes().size() == 0){
+                        startActivity(new Intent(MainActivity.this, FirstStepActivity.class));
+                    } else {
+                        checkUserHomesAndRedirect(user);
+                    }
+                }
+            }
+            @Override
+            public void onDocumentRetrievalFailure(String errorMessage) {
+                Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            }
+        });
+    }
+
+    private void checkUserHomesAndRedirect(User user){
+        dbHelper.GetHomes(user.getHomes(), new OnDocumentsResultListener() {
+            @Override
+            public void onDocumentsRetrieved(List<DocumentSnapshot> documents) {
+                List<Home> homes = new ArrayList<>();
+                for(DocumentSnapshot document : documents){
+                    Home home = document.toObject(Home.class);
+                    homes.add(home);
+                }
+                lsHelper.saveHomeList(MainActivity.this, homes);
+                startActivity(new Intent(MainActivity.this, ProductsListActivity.class));
+            }
+
+            @Override
+            public void onDocumentsRetrievalFailure(String errorMessage) {
+                Toast.makeText(MainActivity.this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
+                startActivity(new Intent(MainActivity.this, LoginActivity.class));
+            }
+        });
     }
 
 }

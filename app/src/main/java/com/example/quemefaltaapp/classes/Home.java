@@ -1,4 +1,4 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.classes;
 
 import com.google.firebase.firestore.DocumentReference;
 
@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Home {
     String HomeCode;
-    DocumentReference Creator;
+    String Creator;
     String Name;
     List<String> Categories;
     //List<Product> products;
@@ -21,7 +21,7 @@ public class Home {
         Categories = categories;
     }
 
-    public Home(String homeCode, DocumentReference creator, String name, List<String> categories) {
+    public Home(String homeCode, String creator, String name, List<String> categories) {
         HomeCode = homeCode;
         Creator = creator;
         Name = name;
@@ -36,11 +36,11 @@ public class Home {
         HomeCode = homeCode;
     }
 
-    public DocumentReference getCreator() {
+    public String getCreator() {
         return Creator;
     }
 
-    public void setCreator(DocumentReference creator) {
+    public void setCreator(String creator) {
         Creator = creator;
     }
 
@@ -58,5 +58,15 @@ public class Home {
 
     public void setCategories(List<String> categories) {
         Categories = categories;
+    }
+
+    @Override
+    public String toString() {
+        return "Home{" +
+                "HomeCode='" + HomeCode + '\'' +
+                ", Creator='" + Creator + '\'' +
+                ", Name='" + Name + '\'' +
+                ", Categories=" + Categories.toString() +
+                '}';
     }
 }

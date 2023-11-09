@@ -13,25 +13,25 @@
         android:theme="@style/Theme.QueMeFaltaApp"
         tools:targetApi="31">
         <activity
-            android:name=".JoinHomeActivity"
+            android:name=".home.JoinHomeActivity"
             android:exported="false" />
         <activity
-            android:name=".CreateHomeActivity"
+            android:name=".home.CreateHomeActivity"
             android:exported="false" />
         <activity
             android:name=".ProductsListActivity"
             android:exported="false" />
         <activity
-            android:name=".FirstStepActivity"
+            android:name=".home.FirstStepActivity"
             android:exported="false" />
         <activity
-            android:name=".RecoverPasswordActivity"
+            android:name=".auth.RecoverPasswordActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".auth.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".auth.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -48,6 +48,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="preloaded_fonts"
+            android:resource="@array/preloaded_fonts" />
     </application>
 
 </manifest>

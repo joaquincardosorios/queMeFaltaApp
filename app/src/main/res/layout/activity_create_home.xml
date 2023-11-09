@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:padding="24dp"
     android:background="@color/primaryBg"
-    tools:context=".CreateHomeActivity">
+    tools:context=".home.CreateHomeActivity">
 
     <ImageView
         android:id="@+id/imageView"

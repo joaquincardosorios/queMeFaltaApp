@@ -1,45 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="24dp"
     android:background="@color/primaryBg"
-    tools:context=".auth.RegisterActivity">
+    tools:context=".settings.UserSettingFragment">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center"
-        android:layout_marginTop="25dp"
-        android:src="@drawable/logo"
-        app:tint="@color/white" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:layout_gravity="center"
-        android:layout_marginTop="25dp">
-        <TextView
+        android:padding="24dp"
+        android:orientation="vertical">
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Registro"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/btnBackUserSettings"
+                android:layout_width="30dp"
+                android:layout_gravity="center"
+                android:layout_height="30dp"
+                android:background="#00FFFFFF"
+                android:src="@drawable/baseline_backspace_24"
+                app:tint="@android:color/holo_red_light" />
+
+            <Space
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_gravity="center"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:src="@drawable/logo" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTitulo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Configuración de Usuario"
             android:textSize="30sp"
             android:textStyle="bold"
             android:textColor="@color/primaryTxt"
             android:gravity="center_horizontal"
             android:layout_marginBottom="16dp"/>
         <!--Form -->
+
+
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_height="wrap_content"
             >
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etNameReg"
+                android:id="@+id/etNameUpd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Nombres"
@@ -52,7 +72,7 @@
             android:layout_height="wrap_content"
             >
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etLastNameReg"
+                android:id="@+id/etLastNameUpd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Apellidos"
@@ -66,10 +86,11 @@
             android:layout_marginTop="8dp"
             >
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etEmailReg"
+                android:id="@+id/etEmailUpd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Email"
+                android:enabled="false"
                 android:textColorHint="@color/tertiaryTxt"
                 android:inputType="textEmailAddress"/>
         </com.google.android.material.textfield.TextInputLayout>
@@ -80,56 +101,47 @@
             android:layout_marginTop="8dp">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPassReg"
+                android:id="@+id/etPassUpd"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Password"
                 android:textColorHint="@color/tertiaryTxt"
                 android:inputType="textPassword"/>
         </com.google.android.material.textfield.TextInputLayout>
+
         <com.google.android.material.textfield.TextInputLayout
-            android:layout_width="match_parent"
+            android:id="@+id/tlPass2"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp">
+            android:layout_marginTop="8dp"
+            android:enabled="false">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/etPassReg2"
+                android:id="@+id/etPassUpd2"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Repetir Password"
-                android:textColorHint="@color/tertiaryTxt"
-                android:inputType="textPassword"/>
+                android:inputType="textPassword"
+                android:enabled="false"
+                android:textColorHint="@color/tertiaryTxt" />
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnRegister"
+            android:id="@+id/btnUpdateUser"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="20dp"
             android:layout_marginTop="15dp"
-            android:text="Registrar"/>
+            android:text="Actualizar Usuario"/>
 
-        <LinearLayout
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDeleteUser"
+            android:backgroundTint="@android:color/holo_red_dark"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textSize="20dp"
             android:layout_marginTop="15dp"
-            android:gravity="center"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Ya estás registrado?"
-                android:textSize="16sp"/>
-
-            <TextView
-                android:id="@+id/tvLoginAqui"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:text="Login"
-                android:textStyle="bold"
-                android:textSize="20sp"/>
-
-        </LinearLayout>
+            android:text="Eliminar Usuario"/>
     </LinearLayout>
-</LinearLayout>
+
+</FrameLayout>

@@ -1,13 +1,9 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.home;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.ClipData;
-import android.content.ClipboardManager;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,12 +11,22 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.material.textfield.TextInputLayout;
+import com.example.quemefaltaapp.MainActivity;
+import com.example.quemefaltaapp.R;
+import com.example.quemefaltaapp.auth.LoginActivity;
+import com.example.quemefaltaapp.classes.Home;
+import com.example.quemefaltaapp.classes.SessionManager;
+import com.example.quemefaltaapp.classes.User;
+import com.example.quemefaltaapp.helpers.DatabaseHelper;
+import com.example.quemefaltaapp.helpers.Helpers;
+import com.example.quemefaltaapp.helpers.LocalStorageHelper;
+import com.example.quemefaltaapp.interfaces.OnDataResultListener;
+import com.example.quemefaltaapp.interfaces.OnResultListener;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class CreateHomeActivity extends AppCompatActivity implements OnResultListener {
+public class CreateHomeActivity extends AppCompatActivity {
 
     EditText etName, etCode;
     Button btnCreate;
@@ -30,7 +36,9 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
     Helpers helper;
     DatabaseHelper dbHelper;
     LocalStorageHelper lsHelper;
+    SessionManager sessionManager;
     String code, userId;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,13 +55,13 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
         helper = new Helpers();
         dbHelper = new DatabaseHelper();
         lsHelper = new LocalStorageHelper();
+        sessionManager = SessionManager.getInstance(this);
 
         user = lsHelper.getLocalUser(this);
-        userId = lsHelper.getLocalId(this);
-
-        if(user.getHomes().size() == 0){
-            startActivity(new Intent(this, FirstStepActivity.class));
+        if(user == null){
+            startActivity(new Intent(this, LoginActivity.class));
         }
+        userId = sessionManager.getUserId();
 
         btnCopy.setOnClickListener(view -> {
             String code = etCode.getText().toString();
@@ -74,13 +82,44 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
         String name = etName.getText().toString();
         if (validateHome(name)){
             code = helper.generateID();
-            String userId = lsHelper.getLocalId(this);
             List<String> categories = new ArrayList<>();
             categories.add("el refrigerador");
             categories.add("la despensa");
             categories.add("el baño");
             Home home = new Home(code, name, categories);
-            dbHelper.createHome(home, userId, this);
+            dbHelper.createHome(home, userId, new OnDataResultListener() {
+                @Override
+                public void onDataRetrieved(String homeId) {
+                    // Lista con nuevos hogares
+                    List<String> homes = user.getHomes();
+                    // Actualiza instancia user
+                    homes.add(homeId);
+                    user.setHomes(homes);
+                    // Actualiza homes
+                    dbHelper.updateUser(user, userId, new OnResultListener() {
+                        @Override
+                        public void onResultSuccess() {
+                            lsHelper.saveLocalUser(CreateHomeActivity.this, user);
+                            etName.setEnabled(false);
+                            etCode.setVisibility(View.VISIBLE);
+                            btnCopy.setVisibility(View.VISIBLE);
+                            etCode.setText(code);
+                            etCode.setEnabled(false);
+                            btnCreate.setEnabled(false);
+                            Toast.makeText(CreateHomeActivity.this, "Hogar creado exitosamente, copie el codigo y envialo a tu grupo", Toast.LENGTH_LONG).show();
+                        }
+                        @Override
+                        public void onResultFailure(String errorMessage) {
+                            Toast.makeText(CreateHomeActivity.this, "Error :" + errorMessage, Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onDataRetrievalFailure(String errorMessage) {
+                    Toast.makeText(CreateHomeActivity.this, errorMessage, Toast.LENGTH_LONG).show();
+                }
+            });
         }
     }
 
@@ -107,33 +146,4 @@ public class CreateHomeActivity extends AppCompatActivity implements OnResultLis
         return valid;
     }
 
-
-    @Override
-    public void onResultSuccess() {
-        // TODO mejorar interface OnResultSuccess
-        // Lista con nuevos hogares
-        List<String> homes = user.getHomes();
-        // Actualiza instancia user
-        homes.add(code);
-        user.setHomes(homes);
-        // Actualiza homes
-        //TODO updater global
-        dbHelper.updateUser(this, homes, userId);
-
-        // Guarda cambios en LS
-        lsHelper.saveLocalUser(this, user, userId);
-        etName.setEnabled(false);
-        etCode.setVisibility(View.VISIBLE);
-        btnCopy.setVisibility(View.VISIBLE);
-        etCode.setText(code);
-        etCode.setEnabled(false);
-        btnCreate.setEnabled(false);
-        Toast.makeText(this, "Hogar creado exitosamente, copie el codigo y envialo a tu grupo", Toast.LENGTH_LONG).show();
-
-    }
-
-    @Override
-    public void onResultFailure(String errorMessage) {
-        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
-    }
 }

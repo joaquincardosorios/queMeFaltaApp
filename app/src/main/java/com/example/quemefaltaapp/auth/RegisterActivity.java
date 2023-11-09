@@ -1,25 +1,21 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.auth;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
+import com.example.quemefaltaapp.R;
+import com.example.quemefaltaapp.classes.User;
+import com.example.quemefaltaapp.helpers.AuthenticationHelper;
+import com.example.quemefaltaapp.helpers.DatabaseHelper;
+import com.example.quemefaltaapp.helpers.Helpers;
+import com.example.quemefaltaapp.interfaces.OnDataResultListener;
+import com.example.quemefaltaapp.interfaces.OnResultListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class RegisterActivity extends AppCompatActivity {
@@ -28,6 +24,7 @@ public class RegisterActivity extends AppCompatActivity {
     Button btnRegister;
     String name, lastname, email, pass, pass2;
     Helpers helper;
+    DatabaseHelper dbHelper;
     AuthenticationHelper authHelper;
 
     @Override
@@ -44,6 +41,7 @@ public class RegisterActivity extends AppCompatActivity {
         btnRegister = findViewById(R.id.btnRegister);
 
         helper = new Helpers();
+        dbHelper = new DatabaseHelper();
         authHelper = new AuthenticationHelper();
 
         btnRegister.setOnClickListener( view -> {
@@ -61,7 +59,20 @@ public class RegisterActivity extends AppCompatActivity {
         pass = etPass.getText().toString();
         pass2 = etPass2.getText().toString();
         if(validateData()) {
-            authHelper.CreateUserAuth(this, email, helper.capitalizeFirstLetter(name),helper.capitalizeFirstLetter(lastname), pass);
+            String capitalName = helper.capitalizeFirstLetter(name);
+            String capitalLastname = helper.capitalizeFirstLetter(lastname);
+            authHelper.CreateUserAuth(email, capitalName, capitalLastname, pass, new OnDataResultListener() {
+                @Override
+                public void onDataRetrieved(String uid) {
+                    User user = new User(email, name, lastname);
+                    dbHelper.createUserDB(RegisterActivity.this, user, uid);
+                }
+
+                @Override
+                public void onDataRetrievalFailure(String errorMessage) {
+
+                }
+            });
         }
     }
 

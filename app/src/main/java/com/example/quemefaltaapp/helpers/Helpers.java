@@ -1,4 +1,4 @@
-package com.example.quemefaltaapp;
+package com.example.quemefaltaapp.helpers;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
 
 public class Helpers {
 
-    public static boolean isValidEmail(String email) {
+    public boolean isValidEmail(String email) {
         String EMAIL_PATTERN =
                 "^[_A-Za-z0-9-]+(\\.[_A-Za-z0-9-]+)*@[_A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
         Pattern pattern = Pattern.compile(EMAIL_PATTERN);
@@ -20,7 +20,7 @@ public class Helpers {
         return valid;
     }
 
-    public static String capitalizeFirstLetter(String input) {
+    public String capitalizeFirstLetter(String input) {
         String[] words = input.split(" ");
         StringBuilder result = new StringBuilder();
 
